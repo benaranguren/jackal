@@ -24,11 +24,12 @@ import (
 	"sync/atomic"
 	"time"
 
+	netutil "github.com/ortuman/jackal/pkg/util/net"
+
 	kitlog "github.com/go-kit/log"
 	"github.com/go-kit/log/level"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	kvtypes "github.com/ortuman/jackal/pkg/cluster/kv/types"
-	netutil "github.com/ortuman/jackal/pkg/util/net"
 	etcdv3 "go.etcd.io/etcd/client/v3"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/keepalive"

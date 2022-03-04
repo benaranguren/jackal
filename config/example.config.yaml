@@ -29,7 +29,7 @@
 #  pgsql:
 #    host: 127.0.0.1:5432
 #    user: jackal
-#    password: password
+#    password: a-secret-key
 #    database: jackal
 #    max_open_conns: 16
 #
@@ -38,16 +38,17 @@
 #    redis:
 #      address: localhost:6379
 
-#cluster:
-#  type: kv
-#  kv:
-#    type: etcd
-#    etcd:
-#      endpoints:
-#        - http://127.0.0.1:2379
-#
-#  server:
-#    port: 14369
+cluster:
+  type: kv
+  kv:
+    type: etcd
+    etcd:
+      username: root
+      endpoints:
+        - http://127.0.0.1:2379
+
+  server:
+    port: 14369
 
 shapers:
   - name: super

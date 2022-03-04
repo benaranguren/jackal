@@ -1,0 +1,102 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jackal
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: jackal
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.jackal.replicasCount }}
+  selector:
+    matchLabels:
+      app: jackal
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        rollme: {{ randAlphaNum 5 | quote }}
+      labels:
+        app: jackal
+    spec:
+      initContainers:
+      - name: wait-for-etcd
+        image: groundnuty/k8s-wait-for:v1.3
+        imagePullPolicy: Always
+        args:
+          - "pod"
+          - "-lapp.kubernetes.io/name=etcd"
+
+      - name: wait-for-pgpool
+        image: groundnuty/k8s-wait-for:v1.3
+        imagePullPolicy: Always
+        args:
+          - "pod"
+          - "-lapp.kubernetes.io/name=postgresql-ha"
+
+      - name: wait-for-redis
+        image: groundnuty/k8s-wait-for:v1.3
+        imagePullPolicy: Always
+        args:
+          - "pod"
+          - "-lapp.kubernetes.io/name=redis"
+
+      containers:
+        - name: jackal
+          args:
+            - ./jackal
+            - -config=/etc/jackal/config.yaml
+          image: {{ .Values.jackal.image.repository }}:{{ .Values.jackal.image.tag }}
+          imagePullPolicy: {{ .Values.jackal.image.pullPolicy }}
+          ports:
+          {{- range .Values.jackal.config.c2s.listeners }}
+          - containerPort: {{ .port }}
+          {{- end }}
+          {{- range .Values.jackal.config.s2s.listeners }}
+          - containerPort: {{ .port }}
+          {{- end }}
+          - containerPort: {{ .Values.jackal.config.http.port }}
+            name: http
+          - containerPort: {{ .Values.jackal.config.admin.port }}
+            name: admin
+          - containerPort: {{ .Values.jackal.config.cluster.server.port }}
+            name: cluster
+
+          readinessProbe:
+            periodSeconds: 10
+            httpGet:
+              path: /healthz
+              port: {{ .Values.jackal.config.http.port }}
+
+          resources:
+            {{- toYaml .Values.jackal.resources | nindent 12 }}
+
+          env:
+            - name: JACKAL_STORAGE_PGSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: jackal-postgresql-ha-postgresql
+                  key: postgresql-password
+                  optional: false
+
+            - name: JACKAL_LOG_STANZAS
+              value: "on"
+
+          volumeMounts:
+            - mountPath: /etc/jackal
+              name: config-volume
+              readOnly: true
+
+            #- mountPath: /var/jackal/cert
+            #  name: jackal-tls
+            #  readOnly: true
+
+      volumes:
+        - name: config-volume
+          configMap:
+            name: jackal-config
+
+        #- name: jackal-tls
+        #  secret:
+        #    secretName: jackal-tls

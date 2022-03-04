@@ -1,0 +1,25 @@
+{{- if .Values.jackal.loadBalancerEnabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: jackal
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: jackal
+spec:
+  type: LoadBalancer
+  externalTrafficPolicy: Local
+  selector:
+    app: jackal
+  ports:
+    {{- range $i, $ln := .Values.jackal.config.c2s.listeners }}
+    - port: {{ $ln.port }}
+      name: c2s-{{ $i }}
+      targetPort: {{ $ln.port }}
+    {{- end }}
+    {{- range $i, $ln := .Values.jackal.config.s2s.listeners }}
+    - port: {{ $ln.port }}
+      name: s2s-{{ $i }}
+      targetPort: {{ $ln.port }}
+    {{- end }}
+{{- end }}

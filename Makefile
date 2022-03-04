@@ -1,4 +1,4 @@
-.PHONY: check fmt vet lint generate test proto build install installctl push-dockerimage
+.PHONY: check fmt vet lint generate test proto build install installctl push-dockerimage helm-install helm-upgrade helm-uninstall
 
 generate:
 	@echo "Generating mock files..."
@@ -41,3 +41,15 @@ installctl:
 push-dockerimage:
 	@echo "Pushing docker image..."
 	@bash scripts/dockerimage.sh
+
+helm-install:
+	@echo "Installing jackal helm chart..."
+	@bash scripts/helm/install.sh
+
+helm-upgrade:
+	@echo "Upgrading jackal helm chart..."
+	@bash scripts/helm/upgrade.sh
+
+helm-uninstall:
+	@echo "Uninstalling jackal helm chart..."
+	@bash scripts/helm/uninstall.sh
