@@ -29,6 +29,7 @@ import (
 	"github.com/ortuman/jackal/pkg/module/xep0092"
 	"github.com/ortuman/jackal/pkg/module/xep0198"
 	"github.com/ortuman/jackal/pkg/module/xep0199"
+	"github.com/ortuman/jackal/pkg/module/xep0363"
 	"github.com/ortuman/jackal/pkg/s2s"
 	"github.com/ortuman/jackal/pkg/shaper"
 	"github.com/ortuman/jackal/pkg/storage"
@@ -95,6 +96,9 @@ type ModulesConfig struct {
 
 	// XEP-0199: XMPP Ping
 	Ping xep0199.Config `fig:"ping"`
+
+	// XEP-0363: HTTP File Upload
+	HTTPUpload xep0363.Config `fig:"http_upload"`
 }
 
 // Config defines jackal application configuration.

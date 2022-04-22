@@ -253,7 +253,8 @@ func (l *SocketListener) getAuthenticators(tr transport.Transport) []auth.Authen
 		switch mechanism {
 		case scramSHA1Mechanism:
 			res = append(res, auth.NewScram(tr, auth.ScramSHA1, false, l.rep, l.peppers))
-			res = append(res, auth.NewScram(tr, auth.ScramSHA1, true, l.rep, l.peppers))
+			// Disable to be compatible with home assistant xmpp client
+			//res = append(res, auth.NewScram(tr, auth.ScramSHA1, true, l.rep, l.peppers))
 
 		case scramSHA256Mechanism:
 			res = append(res, auth.NewScram(tr, auth.ScramSHA256, false, l.rep, l.peppers))

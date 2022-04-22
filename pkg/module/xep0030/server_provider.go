@@ -40,7 +40,10 @@ func newServerProvider(
 }
 
 func (p *serverProvider) Identities(_ context.Context, _, _ *jid.JID, _ string) []discomodel.Identity {
-	return []discomodel.Identity{{Type: "im", Category: "server", Name: "jackal"}}
+	return []discomodel.Identity{
+		{Type: "im", Category: "server", Name: "jackal"},
+		{Type: "file", Category: "store", Name: "HTTP File Upload"},
+	}
 }
 
 func (p *serverProvider) Items(_ context.Context, _, _ *jid.JID, _ string) ([]discomodel.Item, error) {
@@ -69,5 +72,19 @@ func (p *serverProvider) Features(ctx context.Context, _, _ *jid.JID, _ string) 
 }
 
 func (p *serverProvider) Forms(ctx context.Context, toJID, fromJID *jid.JID, node string) ([]xep0004.DataForm, error) {
-	return nil, nil
+	return []xep0004.DataForm{
+		{Type: xep0004.Result,
+			Fields: xep0004.Fields{
+				{
+					Var:    "FORM_TYPE",
+					Type:   "hidden",
+					Values: []string{"urn:xmpp:http:upload:0"},
+				},
+				{
+					Var:    "max-file-size",
+					Values: []string{"100000"},
+				},
+			},
+		},
+	}, nil
 }

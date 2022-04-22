@@ -29,6 +29,7 @@ import (
 	"github.com/ortuman/jackal/pkg/module/xep0199"
 	"github.com/ortuman/jackal/pkg/module/xep0202"
 	"github.com/ortuman/jackal/pkg/module/xep0280"
+	"github.com/ortuman/jackal/pkg/module/xep0363"
 )
 
 var defaultModules = []string{
@@ -44,6 +45,7 @@ var defaultModules = []string{
 	xep0198.ModuleName,
 	xep0199.ModuleName,
 	xep0280.ModuleName,
+	xep0363.ModuleName,
 }
 
 var modFns = map[string]func(a *Jackal, cfg *ModulesConfig) module.Module{
@@ -111,5 +113,8 @@ var modFns = map[string]func(a *Jackal, cfg *ModulesConfig) module.Module{
 	// (https://xmpp.org/extensions/xep-0280.html)
 	xep0280.ModuleName: func(j *Jackal, _ *ModulesConfig) module.Module {
 		return xep0280.New(j.router, j.hosts, j.resMng, j.hk, j.logger)
+	},
+	xep0363.ModuleName: func(j *Jackal, cfg *ModulesConfig) module.Module {
+		return xep0363.New(cfg.HTTPUpload, j.router, j.hosts, j.resMng, j.hk, j.logger)
 	},
 }
